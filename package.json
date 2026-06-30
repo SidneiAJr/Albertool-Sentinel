@@ -1,0 +1,69 @@
+{
+  "name": "albertool-sentinel",
+  "displayName": "Albertool Sentinel",
+  "description": "ENV validator and generator for VS Code",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": ["Other"],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "sentinel-sidebar",
+          "title": "Sentinel",
+          "icon": "$(shield)"
+        }
+      ]
+    },
+    "views": {
+      "sentinel-sidebar": [
+        {
+          "id": "sentinel-env",
+          "name": "🛡️ ENV Validator"
+        }
+      ]
+    },
+    "commands": [
+      {
+        "command": "sentinel.refresh",
+        "title": "Sentinel: Atualizar",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "sentinel.generate",
+        "title": "Sentinel: Gerar .env"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sentinel.refresh",
+          "when": "view == sentinel-env",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.85.0",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "typescript-eslint": "^8.56.1",
+    "eslint": "^9.39.3",
+    "typescript": "^5.9.3",
+    "@vscode/test-cli": "^0.0.12",
+    "@vscode/test-electron": "^2.5.2"
+  }
+}
