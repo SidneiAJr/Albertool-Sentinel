@@ -42,25 +42,35 @@ export class EnvValidator {
         }))
     }
 
-    async generateEnvFileLite(variables: string[]): Promise<void> {
-        const workspaceFolders = vscode.workspace.workspaceFolders
-        if (!workspaceFolders) return
+   async generateEnvFileLite(variables: string[]): Promise<void> {
+    const workspaceFolders = vscode.workspace.workspaceFolders
+    if (!workspaceFolders) return
 
-        const root = workspaceFolders[0].uri.fsPath
-        const envPath = path.join(root, '.env')
-        const now = new Date().toLocaleString('pt-BR')
+    const root = workspaceFolders[0].uri.fsPath
+    const envPath = path.join(root, '.env')
+    const now = new Date().toLocaleString('pt-BR')
 
-        let content = `# Gerado pelo Albertool Sentinel (Lite)\n# ${now}\n\n`
+    const content = `# Gerado pelo Albertool Sentinel (Lite)
+# ${now}
 
-        for (const variable of variables) {
-            content += `${variable}=\n`
-        }
+PORT=
+NODE_ENV=
 
-        fs.writeFileSync(envPath, content, 'utf-8')
-        const doc = await vscode.workspace.openTextDocument(envPath)
-        await vscode.window.showTextDocument(doc)
-        vscode.window.showInformationMessage('🛡️ Sentinel: .env Lite gerado com sucesso!')
-    }
+DB_HOST=
+DB_PORT=
+DB_USER=
+DB_PASSWORD=
+DB_NAME=
+
+JWT_SECRET=
+JWT_EXPIRES_IN=
+`
+
+    fs.writeFileSync(envPath, content, 'utf-8')
+    const doc = await vscode.workspace.openTextDocument(envPath)
+    await vscode.window.showTextDocument(doc)
+    vscode.window.showInformationMessage('🛡️ Sentinel: .env Lite gerado com sucesso!')
+}
 
     async generateEnvFile(variables: string[]): Promise<void> {
         const workspaceFolders = vscode.workspace.workspaceFolders
