@@ -1,6 +1,8 @@
 import * as vscode from 'vscode'
 import { EnvScanner } from './EnvScanner'
 import { EnvValidator, EnvStatus } from './EnvValidator'
+import * as fs from 'fs'
+import * as path from 'path'
 
 export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
     private _onDidChangeTreeData = new vscode.EventEmitter<SentinelItem | undefined | null | void>()
@@ -18,9 +20,25 @@ export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
 
     async refresh() {
         const variables = await this.scanner.scanVariables()
+
+        const envPath = this.getEnvPath()
+        if (!envPath && variables.length > 0) {
+            await this.validator.generateEnvFile(variables)
+            vscode.window.showInformationMessage(
+                '🛡️ Sentinel: .env não encontrado — arquivo criado automaticamente!'
+            )
+        }
+
         this.statuses = this.validator.validate(variables)
-        this.hasEnvFile = this.statuses.length > 0
+        this.hasEnvFile = this.getEnvPath() !== null
         this._onDidChangeTreeData.fire()
+    }
+
+    private getEnvPath(): string | null {
+        const folders = vscode.workspace.workspaceFolders
+        if (!folders) return null
+        const envPath = path.join(folders[0].uri.fsPath, '.env')
+        return fs.existsSync(envPath) ? envPath : null
     }
 
     getTreeItem(element: SentinelItem): vscode.TreeItem {
@@ -48,6 +66,22 @@ export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
                 vscode.TreeItemCollapsibleState.None
             )
 
+            const items: SentinelItem[] = [summary]
+
+            if (!this.hasEnvFile || missing.length > 0) {
+                const createBtn = new SentinelItem(
+                    '$(add) Criar .env completo',
+                    vscode.TreeItemCollapsibleState.None,
+                    'create-env-btn'
+                )
+                createBtn.tooltip = 'Gera o .env enterprise com todas as variáveis do projeto'
+                createBtn.command = {
+                    command: 'sentinel.generate',
+                    title: 'Criar .env completo'
+                }
+                items.push(createBtn)
+            }
+
             const missingGroup = missing.length > 0
                 ? new SentinelItem(
                     `❌ Faltando (${missing.length})`,
@@ -62,7 +96,6 @@ export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
                 'found-group'
             )
 
-            const items: SentinelItem[] = [summary]
             if (missingGroup) items.push(missingGroup)
             items.push(foundGroup)
 
@@ -93,7 +126,6 @@ export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
                         vscode.TreeItemCollapsibleState.None,
                         'var-found'
                     )
-                    // Mostra valor mascarado se tiver valor
                     item.description = s.value ? '••••••' : 'vazio'
                     item.tooltip = s.value
                         ? `${s.variable} = ${s.value.substring(0, 3)}••••`

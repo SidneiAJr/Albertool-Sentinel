@@ -30,18 +30,24 @@
     "commands": [
       {
         "command": "sentinel.refresh",
-        "title": "Sentinel: Atualizar",
+        "title": "Refresh",
         "icon": "$(refresh)"
       },
       {
         "command": "sentinel.generate",
-        "title": "Sentinel: Gerar .env"
+        "title": "Criar .env completo",
+        "icon": "$(add)"
       }
     ],
     "menus": {
       "view/title": [
         {
           "command": "sentinel.refresh",
+          "when": "view == sentinel-env",
+          "group": "navigation"
+        },
+        {
+          "command": "sentinel.generate",
           "when": "view == sentinel-env",
           "group": "navigation"
         }
