@@ -110,7 +110,7 @@ REDIS_PORT=
 
 O Sentinel detecta variáveis em:
 
-- `src/config/env-config.ts` — padrão Albertool/HydroRS
+- `src/config/env-config.ts` — padrão Albertool
 - `.env.example` — variáveis documentadas
 - Qualquer arquivo `.ts` ou `.js` com `process.env.VARIAVEL`
 
