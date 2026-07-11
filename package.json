@@ -35,8 +35,13 @@
       },
       {
         "command": "sentinel.generate",
-        "title": "Criar .env completo",
+        "title": "Criar .env Enterprise",
         "icon": "$(add)"
+      },
+      {
+        "command": "sentinel.generateLite",
+        "title": "Criar .env Lite",
+        "icon": "$(file-add)"
       }
     ],
     "menus": {
@@ -48,6 +53,11 @@
         },
         {
           "command": "sentinel.generate",
+          "when": "view == sentinel-env",
+          "group": "navigation"
+        },
+        {
+          "command": "sentinel.generateLite",
           "when": "view == sentinel-env",
           "group": "navigation"
         }

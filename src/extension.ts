@@ -12,13 +12,12 @@ export function activate(context: vscode.ExtensionContext) {
 
     vscode.window.registerTreeDataProvider('sentinel-env', provider)
 
-    // Comando refresh
     const refreshCmd = vscode.commands.registerCommand('sentinel.refresh', () => {
         provider.refresh()
         vscode.window.showInformationMessage('🛡️ Sentinel: Escaneando variáveis...')
     })
 
-    // Comando gerar .env
+    // Enterprise — seções completas
     const generateCmd = vscode.commands.registerCommand('sentinel.generate', async () => {
         const variables = await scanner.scanVariables()
         if (variables.length === 0) {
@@ -29,17 +28,25 @@ export function activate(context: vscode.ExtensionContext) {
         await provider.refresh()
     })
 
-    // Refresh ao salvar arquivo
+    // Lite — só o que o scanner detectou
+    const generateLiteCmd = vscode.commands.registerCommand('sentinel.generateLite', async () => {
+        const variables = await scanner.scanVariables()
+        if (variables.length === 0) {
+            vscode.window.showWarningMessage('🛡️ Sentinel: Nenhuma variável encontrada no projeto!')
+            return
+        }
+        await validator.generateEnvFileLite(variables)
+        await provider.refresh()
+    })
+
     const onSave = vscode.workspace.onDidSaveTextDocument(async (doc) => {
         if (doc.fileName.includes('.env') || doc.fileName.includes('env-config')) {
             await provider.refresh()
         }
     })
 
-    // Refresh inicial
     provider.refresh()
-
-    context.subscriptions.push(refreshCmd, generateCmd, onSave)
+    context.subscriptions.push(refreshCmd, generateCmd, generateLiteCmd, onSave)
 }
 
 export function deactivate() {}

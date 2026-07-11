@@ -68,18 +68,32 @@ export class SentinelProvider implements vscode.TreeDataProvider<SentinelItem> {
 
             const items: SentinelItem[] = [summary]
 
+            // 🆕 Dois botões no lugar de um
             if (!this.hasEnvFile || missing.length > 0) {
-                const createBtn = new SentinelItem(
-                    '$(add) Criar .env completo',
+                const enterpriseBtn = new SentinelItem(
+                    '$(add) Criar .env Enterprise',
                     vscode.TreeItemCollapsibleState.None,
                     'create-env-btn'
                 )
-                createBtn.tooltip = 'Gera o .env enterprise com todas as variáveis do projeto'
-                createBtn.command = {
+                enterpriseBtn.tooltip = 'Gera o .env completo com todas as seções organizadas'
+                enterpriseBtn.command = {
                     command: 'sentinel.generate',
-                    title: 'Criar .env completo'
+                    title: 'Criar .env Enterprise'
                 }
-                items.push(createBtn)
+
+                const liteBtn = new SentinelItem(
+                    '$(file-add) Criar .env Lite',
+                    vscode.TreeItemCollapsibleState.None,
+                    'create-env-lite-btn'
+                )
+                liteBtn.tooltip = 'Gera o .env só com as variáveis detectadas no projeto'
+                liteBtn.command = {
+                    command: 'sentinel.generateLite',
+                    title: 'Criar .env Lite'
+                }
+
+                items.push(enterpriseBtn)
+                items.push(liteBtn)
             }
 
             const missingGroup = missing.length > 0

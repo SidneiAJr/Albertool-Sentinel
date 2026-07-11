@@ -42,6 +42,26 @@ export class EnvValidator {
         }))
     }
 
+    async generateEnvFileLite(variables: string[]): Promise<void> {
+        const workspaceFolders = vscode.workspace.workspaceFolders
+        if (!workspaceFolders) return
+
+        const root = workspaceFolders[0].uri.fsPath
+        const envPath = path.join(root, '.env')
+        const now = new Date().toLocaleString('pt-BR')
+
+        let content = `# Gerado pelo Albertool Sentinel (Lite)\n# ${now}\n\n`
+
+        for (const variable of variables) {
+            content += `${variable}=\n`
+        }
+
+        fs.writeFileSync(envPath, content, 'utf-8')
+        const doc = await vscode.workspace.openTextDocument(envPath)
+        await vscode.window.showTextDocument(doc)
+        vscode.window.showInformationMessage('🛡️ Sentinel: .env Lite gerado com sucesso!')
+    }
+
     async generateEnvFile(variables: string[]): Promise<void> {
         const workspaceFolders = vscode.workspace.workspaceFolders
         if (!workspaceFolders) return
@@ -163,3 +183,4 @@ ${extraVars.map(v => `${v}=`).join('\n')}
         vscode.window.showInformationMessage('🛡️ Sentinel: .env enterprise gerado com sucesso!')
     }
 }
+
